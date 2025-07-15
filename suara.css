@@ -1,0 +1,32 @@
+/* =============================================
+   Style Global untuk Halaman Iframe Fullscreen
+   ============================================= 
+*/
+
+/* Mengatur elemen html & body agar memenuhi layar penuh */
+/* Mengaktifkan Flexbox untuk center align iframe secara vertikal dan horizontal */
+html, body {
+    margin: 0;               /* Hilangkan margin default browser */
+    padding: 0;              /* Hilangkan padding default */
+    height: 100%;            /* Tinggi penuh layar */
+    overflow: hidden;        /* Hilangkan scroll (fullscreen fix) */
+    display: flex;           /* Gunakan flexbox layout */
+    justify-content: center; /* Pusat horizontal */
+    align-items: center;     /* Pusat vertikal */
+    background-color: #f2f3f5; /* Warna latar belakang (abu muda) */
+}
+
+/* Styling untuk iframe agar tampil di tengah, besar tapi tetap punya margin dari tepi layar */
+iframe {
+    width: 90vw;             /* 90% dari lebar viewport (responsive) */
+    height: 90vh;            /* 90% dari tinggi viewport */
+    border: none;            /* Hilangkan border bawaan iframe */
+    border-radius: 12px;     /* Membulatkan sudut iframe (biar lebih soft) */
+}
+
+/* =============================================
+   Catatan:
+   - Tidak perlu gunakan .responsive-wrapper jika pakai flexbox layout seperti ini.
+   - Layout ini cocok untuk tampilan fullscreen responsif dan tanpa scroll.
+   ============================================= 
+*/
