@@ -962,6 +962,25 @@ window.getUid2AdvertisingToken = async () => {
     ></iframe>
   </div>
 
+  <!-- 🎨 MODAL OVERLAY (Initially hidden) -->
+  <div id="modalOverlay" class="modal-overlay"></div>
+  
+  <!-- 🎨 MODAL CONTAINER (Initially hidden) -->
+  <div id="modalContainer" class="modal-container">
+    <button id="modalCloseBtn" class="modal-close-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <iframe
+        id="modalIframe"
+        class="modal-iframe"
+        title="Checkout Modal"
+        allow="clipboard-read; clipboard-write"
+    ></iframe>
+  </div>
+
             <div class="list-item-y-img-retangle">
     
     
