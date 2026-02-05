@@ -1,12 +1,4 @@
 .topup-iframe-wrapper {
-    /* Positioning */
-    position: fixed;           /* Fixed agar tidak terpengaruh scroll page */
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 999999;          /* Z-index tinggi agar selalu di atas */
-    
     /* Layout */
     display: flex;
     justify-content: center;
