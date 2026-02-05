@@ -1,45 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Menentukan karakter encoding yang digunakan -->
   <meta charset="UTF-8" />
-
-  <!-- Membuat halaman responsif di berbagai ukuran layar (mobile-friendly) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Judul tab browser -->
   <title>Top Up Billing</title>
-
-  <!-- Menghubungkan file CSS eksternal (untuk styling iframe & layout) -->
   <link rel="stylesheet" href="suara.css" />
 </head>
 
 <body>
-  <!-- ==============================
-       IFRAME UTAMA
-       ============================== -->
-  <!-- 
-    Iframe ini menampilkan halaman billing dari server eksternal.
-    Diletakkan langsung dalam <body> dan akan dirender secara fullscreen tengah 
-    karena sudah diatur di file suara.css menggunakan Flexbox.
-  -->
-  <iframe
-      src="https://biller-interface-dev.2secure.co.id/" 
-      title="Top Up Billing"
-      allow="clipboard-read; clipboard-write"
-      id="myCompFrame"
-  ></iframe>
+  <!-- ✅ Wrapper dengan class unik untuk isolasi CSS -->
+  <div class="topup-iframe-wrapper">
+    <iframe
+        src="http://localhost:8000/" 
+        title="Top Up Billing"
+        allow="clipboard-read; clipboard-write"
+        id="myCompFrame"
+        class="topup-iframe"
+    ></iframe>
+  </div>
 
-  <!-- ==============================
-       JAVASCRIPT
-       ============================== -->
-  <!-- 
-    File suara.js menangani:
-    - komunikasi antara iframe dan parent window (via postMessage)
-    - fitur responsive height
-    - fitur fullscreen/expand iframe
-    - tombol kembali dari fullscreen
-  -->
   <script src="suara.js"></script>
 </body>
 </html>

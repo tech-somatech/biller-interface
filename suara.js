@@ -1,143 +1,228 @@
 // ==============================================
-// MENANGANI KOMUNIKASI DARI IFRAME (postMessage)
+// DEFINISI FUNGSI (LETAKKAN DI ATAS!)
+// ==============================================
+
+// 🎨 DATA YANG AKAN DIKIRIM KE MODAL IFRAME
+let modalData = {};
+
+// 🔍 MEMBUKA MODAL FULLSCREEN DENGAN IFRAME
+function expandToBodyArea(data = {}) {
+    
+    // Simpan data yang akan dikirim ke modal
+    modalData = data;
+    
+    // Buat overlay gelap di belakang modal
+    const overlay = document.createElement('div');
+    overlay.id = 'modalOverlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0);
+        z-index: 9999998;
+        backdrop-filter: blur(0px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    `;
+
+    // Buat container modal
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'modalContainer';
+    modalContainer.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        width: 95vw;
+        height: 95vh;
+        max-width: 1400px;
+        max-height: 900px;
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        z-index: 9999999;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    `;
+
+    // ✅ Tombol close floating (tanpa header)
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    `;
+    closeBtn.style.cssText = `
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.6);
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        color: white;
+        z-index: 10;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    `;
+
+    closeBtn.onmouseenter = () => {
+        closeBtn.style.background = 'rgba(0, 0, 0, 0.8)';
+        closeBtn.style.transform = 'rotate(90deg)';
+    };
+    closeBtn.onmouseleave = () => {
+        closeBtn.style.background = 'rgba(0, 0, 0, 0.6)';
+        closeBtn.style.transform = 'rotate(0deg)';
+    };
+    closeBtn.onclick = closeModal;
+
+    // Buat iframe baru untuk modal
+    const modalIframe = document.createElement('iframe');
+    modalIframe.id = 'modalIframe';
+    
+    // ✅ CEK APAKAH ADA URL CHECKOUT
+    if (data.url) {
+        // Jika ada URL checkout, load ke URL tersebut
+        modalIframe.src = data.url;
+    } else {
+        // Jika tidak ada URL, load halaman awal (untuk fill form biasa)
+        const mainIframe = document.getElementById('myCompFrame');
+        modalIframe.src = mainIframe.dataset.originalSrc || mainIframe.src;
+    }
+    
+    modalIframe.allow = 'clipboard-read; clipboard-write';
+    modalIframe.style.cssText = `
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: white;
+        border-radius: 24px;
+    `;
+
+    // Kirim data ke iframe setelah load (untuk fill form biasa)
+    modalIframe.onload = () => {
+        // Hanya kirim fillFormData jika BUKAN checkout (tidak ada URL)
+        if (!data.url && modalData.formData) {
+            setTimeout(() => {
+                modalIframe.contentWindow.postMessage({
+                    action: 'fillFormData',
+                    data: modalData
+                }, '*');
+            }, 500);
+        }
+    };
+
+    // ✅ Susun modal (tanpa header, langsung iframe + close button)
+    modalContainer.appendChild(modalIframe);
+    modalContainer.appendChild(closeBtn);
+    document.body.appendChild(overlay);
+    document.body.appendChild(modalContainer);
+
+    // Animasi masuk
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            overlay.style.background = 'rgba(0, 0, 0, 0.6)';
+            overlay.style.backdropFilter = 'blur(8px)';
+            modalContainer.style.opacity = '1';
+            modalContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+        }, 10);
+    });
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+}
+
+// 🔙 TUTUP MODAL DAN KEMBALI KE TAMPILAN NORMAL
+function closeModal() {
+    const overlay = document.getElementById('modalOverlay');
+    const modalContainer = document.getElementById('modalContainer');
+
+    if (modalContainer && overlay) {
+        // Animasi keluar
+        modalContainer.style.opacity = '0';
+        modalContainer.style.transform = 'translate(-50%, -50%) scale(0.9)';
+        overlay.style.background = 'rgba(0, 0, 0, 0)';
+        overlay.style.backdropFilter = 'blur(0px)';
+
+        setTimeout(() => {
+            modalContainer.remove();
+            overlay.remove();
+            document.body.style.overflow = '';
+        }, 400);
+    }
+}
+
+// 🔄 UPDATE DATA DARI MODAL KE PARENT IFRAME
+function updateParentData(data) {
+    const mainIframe = document.getElementById('myCompFrame');
+    if (mainIframe && mainIframe.contentWindow) {
+        mainIframe.contentWindow.postMessage({
+            action: 'updateFormData',
+            data: data
+        }, '*');
+    }
+}
+
+// ==============================================
+// EVENT LISTENER (LETAKKAN DI BAWAH!)
 // ==============================================
 
 window.addEventListener('message', function(event) {
-    // 🔒 Validasi asal pesan demi keamanan
-    // Pastikan hanya menerima pesan dari domain yang dipercaya
-    if (event.origin !== "https://biller-interface-dev.2secure.co.id") return;
-
-    // Ambil nilai 'action' dari pesan yang dikirim
     const action = event.data.action;
 
-    // Ambil elemen iframe dengan ID tertentu (pastikan ID-nya konsisten di HTML)
     const iframe = document.getElementById('myCompFrame');
 
-    // 📏 Aksi: Menyesuaikan tinggi iframe berdasarkan konten internalnya
+    // 📏 Resize iframe
     if (action === 'resizeIframe' && event.data.height) {
         iframe.style.height = event.data.height + 'px';
     }
 
-    // 🔍 Aksi: Memperluas iframe agar tampil fullscreen memenuhi seluruh layar
+    // 🔍 Expand fullscreen dengan data
     if (action === 'expandToBody') {
-        // Panggil fungsi khusus untuk handle expand fullscreen (jika tersedia)
-        expandToBodyArea?.();
+        expandToBodyArea(event.data);
     }
 
-    // 🔁 Aksi: Redirect halaman induk kembali ke "halaman utama" / asal
+    // 🔁 Redirect home
     if (action === 'redirectToHome') {
-        // Ambil URL asal dari halaman embed (bukan iframe)
-        const homeUrl = event.target.location.href;
+        window.location.href = window.location.origin;
+    }
 
-        // Arahkan browser ke halaman tersebut
-        window.location.href = homeUrl;
+    // 💾 Update data dari modal ke parent
+    if (action === 'updateParentForm') {
+        updateParentData(event.data.data);
+        closeModal();
+    }
+
+    // ❌ Close modal dari dalam iframe
+    if (action === 'closeModal') {
+        closeModal();
     }
 });
 
-// ==============================================
-// MEMPERLUAS IFRAME KE LAYAR PENUH (FULLSCREEN)
-// ==============================================
-
-function expandToBodyArea() {
-    const iframe = document.getElementById('myCompFrame');
-
-    // 💾 Simpan style asli iframe agar bisa dikembalikan nanti
-    if (!iframe.dataset.originalStyle) {
-        iframe.dataset.originalStyle = iframe.style.cssText;
+// Tutup modal dengan ESC key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modalContainer = document.getElementById('modalContainer');
+        if (modalContainer) {
+            closeModal();
+        }
     }
+});
 
-    // 💾 Simpan URL asli iframe juga jika nanti ingin di-restore
-    if (!iframe.dataset.originalSrc) {
-        iframe.dataset.originalSrc = iframe.src;
+// Tutup modal dengan klik overlay
+document.addEventListener('click', function(event) {
+    const overlay = document.getElementById('modalOverlay');
+    if (event.target === overlay) {
+        closeModal();
     }
-
-    // 🧹 Bersihkan margin, padding, dan scroll halaman
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-    document.documentElement.style.margin = '0';
-    document.documentElement.style.padding = '0';
-
-    // 🎬 Jalankan animasi frame untuk merubah style iframe ke fullscreen
-    requestAnimationFrame(() => {
-        iframe.style.cssText = `
-            position: fixed !important;       /* Tetap di tempat saat scroll */
-            top: 0 !important;                /* Mulai dari atas layar */
-            left: 0 !important;               /* Mulai dari kiri layar */
-            width: 100vw !important;          /* Lebar layar penuh */
-            height: 100vh !important;         /* Tinggi layar penuh */
-            z-index: 9999 !important;         /* Di atas semua elemen */
-            background-color: white !important;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5) !important;
-            border: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            display: block !important;
-        `;
-
-        // Tambahkan tombol kembali setelah iframe fullscreen
-        addCloseButton();
-    });
-}
-
-// ==============================================
-// TOMBOL UNTUK KEMBALI DARI MODE FULLSCREEN
-// ==============================================
-
-function addCloseButton() {
-    // Hindari membuat tombol lebih dari satu
-    if (document.getElementById('closeBodyBtn')) return;
-
-    // Buat tombol baru
-    const closeBtn = document.createElement('button');
-    closeBtn.id = 'closeBodyBtn';
-    closeBtn.innerHTML = '← Kembali';
-
-    // 💅 Styling tombol kembali agar tampil di pojok kanan atas layar
-    closeBtn.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 10000; /* Lebih tinggi dari iframe */
-        background: #1f2937; /* Tailwind gray-800 */
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 9999px; /* Tombol oval */
-        cursor: pointer;
-        font-size: 14px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        transition: background 0.3s ease;
-    `;
-
-    // 🖱️ Hover effect: ganti warna saat mouse diarahkan
-    closeBtn.onmouseenter = () => closeBtn.style.background = '#374151'; // Tailwind gray-700
-    closeBtn.onmouseleave = () => closeBtn.style.background = '#1f2937'; // Tailwind gray-800
-
-    // 🔙 Klik tombol untuk memulihkan tampilan asli
-    closeBtn.onclick = restoreOriginalView;
-
-    // Tambahkan tombol ke dalam halaman
-    document.body.appendChild(closeBtn);
-}
-
-// ==============================================
-// KEMBALIKAN TAMPILAN IFRAME SEPERTI SEMULA
-// ==============================================
-
-function restoreOriginalView() {
-    const iframe = document.getElementById('myCompFrame');
-
-    // 🧼 Kembalikan style yang sebelumnya disimpan
-    if (iframe && iframe.dataset.originalStyle) {
-        iframe.style.cssText = iframe.dataset.originalStyle;
-    }
-
-    // 🔁 Reset URL iframe ke semula (jika perlu)
-    iframe.src = iframe.dataset.originalSrc || iframe.src;
-
-    // 🗑️ Hapus tombol kembali dari halaman
-    const closeBtn = document.getElementById('closeBodyBtn');
-    if (closeBtn) closeBtn.remove();
-}
+});

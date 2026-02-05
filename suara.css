@@ -1,32 +1,55 @@
-/* =============================================
-   Style Global untuk Halaman Iframe Fullscreen
-   ============================================= 
-*/
-
-/* Mengatur elemen html & body agar memenuhi layar penuh */
-/* Mengaktifkan Flexbox untuk center align iframe secara vertikal dan horizontal */
-html, body {
-    margin: 0;               /* Hilangkan margin default browser */
-    padding: 0;              /* Hilangkan padding default */
-    height: 100%;            /* Tinggi penuh layar */
-    overflow: hidden;        /* Hilangkan scroll (fullscreen fix) */
-    display: flex;           /* Gunakan flexbox layout */
-    justify-content: center; /* Pusat horizontal */
-    align-items: center;     /* Pusat vertikal */
-    background-color: #f2f3f5; /* Warna latar belakang (abu muda) */
+.topup-iframe-wrapper {
+    /* Positioning */
+    position: fixed;           /* Fixed agar tidak terpengaruh scroll page */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999;          /* Z-index tinggi agar selalu di atas */
+    
+    /* Layout */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Background */
+    background-color: #f2f3f5;
+    
+    /* Reset */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+    /* Prevent interference */
+    overflow: hidden;
 }
 
-/* Styling untuk iframe agar tampil di tengah, besar tapi tetap punya margin dari tepi layar */
-iframe {
-    width: 90vw;             /* 90% dari lebar viewport (responsive) */
-    height: 90vh;            /* 90% dari tinggi viewport */
-    border: none;            /* Hilangkan border bawaan iframe */
-    border-radius: 12px;     /* Membulatkan sudut iframe (biar lebih soft) */
+/* ✅ Styling iframe dengan class spesifik */
+.topup-iframe-wrapper .topup-iframe {
+    /* Size */
+    width: 90vw;
+    max-width: 1400px;        /* Batas maksimal lebar */
+    height: 90vh;
+    max-height: 900px;        /* Batas maksimal tinggi */
+    
+    /* Style */
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    
+    /* Reset properties yang mungkin di-override */
+    display: block;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background: white;
 }
 
-/* =============================================
-   Catatan:
-   - Tidak perlu gunakan .responsive-wrapper jika pakai flexbox layout seperti ini.
-   - Layout ini cocok untuk tampilan fullscreen responsif dan tanpa scroll.
-   ============================================= 
-*/
+/* ✅ Responsive untuk mobile */
+@media (max-width: 768px) {
+    .topup-iframe-wrapper .topup-iframe {
+        width: 95vw;
+        height: 95vh;
+        border-radius: 8px;
+    }
+}
