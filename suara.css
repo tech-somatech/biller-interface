@@ -11,7 +11,8 @@
     
     /* Reset hanya untuk wrapper ini */
     margin: 0;
-    padding: 16px;
+    margin-bottom: 40px;
+    padding: 10px;
     box-sizing: border-box;
     
     /* Prevent interference */
@@ -23,8 +24,8 @@
     /* Size - Desktop */
     width: 90vw;
     max-width: 1400px;
-    height: 90vh;
-    max-height: 900px;
+    height: 50vh;
+    max-height: 500px;
     
     /* Style */
     border: none;
@@ -140,7 +141,7 @@
     
     .topup-iframe-wrapper .topup-iframe {
         width: 92vw;
-        height: 92vh;
+        height: 70vh;
         border-radius: 10px;
     }
     
@@ -202,7 +203,7 @@
     
     .topup-iframe-wrapper .topup-iframe {
         width: 98vw;
-        height: 98vh;
+        height: 50vh;
         border-radius: 6px;
     }
     

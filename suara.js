@@ -12,9 +12,8 @@ function getBaseURL() {
     if (mainIframe && mainIframe.src) {
         try {
             const url = new URL(mainIframe.src);
-            return url.origin; // Returns http://localhost:8000 or https://domain.com
+            return url.origin;
         } catch (e) {
-            console.error('❌ Error parsing iframe URL:', e);
             return window.location.origin; // Fallback to current page origin
         }
     }
@@ -23,7 +22,6 @@ function getBaseURL() {
 
 // 🎨 OPEN MODAL FULLSCREEN
 function openModal(data = {}) {
-    console.log('🎨 Opening modal with data:', data);
     
     const overlay = document.getElementById('modalOverlay');
     const container = document.getElementById('modalContainer');
@@ -31,7 +29,6 @@ function openModal(data = {}) {
     const mainIframe = document.getElementById('myCompFrame');
     
     if (!overlay || !container || !modalIframe) {
-        console.error('❌ Modal elements not found');
         return;
     }
     
@@ -42,10 +39,8 @@ function openModal(data = {}) {
     
     // ✅ Set URL untuk modal iframe
     if (data.url) {
-        console.log('✅ Loading checkout URL in modal:', data.url);
         modalIframe.src = data.url;
     } else {
-        console.warn('⚠️ No checkout URL provided');
         // Default ke halaman checkout menggunakan base URL dari main iframe
         const baseURL = getBaseURL();
         modalIframe.src = baseURL + '/checkout/';
@@ -60,13 +55,10 @@ function openModal(data = {}) {
     
     // ✅ Set flag
     isModalOpen = true;
-    
-    console.log('✅ Modal opened successfully');
 }
 
 // 🔙 CLOSE MODAL
 function closeModal() {
-    console.log('🔙 Closing modal');
     
     const overlay = document.getElementById('modalOverlay');
     const container = document.getElementById('modalContainer');
@@ -74,7 +66,6 @@ function closeModal() {
     const mainIframe = document.getElementById('myCompFrame');
     
     if (!overlay || !container || !modalIframe) {
-        console.error('❌ Modal elements not found');
         return;
     }
     
@@ -92,7 +83,6 @@ function closeModal() {
         
         // Reload main iframe ke homepage
         if (originalMainIframeSrc && mainIframe) {
-            console.log('🔄 Reloading main iframe to:', originalMainIframeSrc);
             mainIframe.src = originalMainIframeSrc;
         } else if (mainIframe) {
             // Fallback: reload ke base URL + /
@@ -102,8 +92,6 @@ function closeModal() {
         
         // Reset flag
         isModalOpen = false;
-        
-        console.log('✅ Modal closed successfully');
     }, 300); // Match CSS transition duration
 }
 
@@ -115,7 +103,6 @@ function updateMainIframeData(data) {
             action: 'updateFormData',
             data: data
         }, '*');
-        console.log('📤 Data sent to main iframe:', data);
     }
 }
 
@@ -133,31 +120,15 @@ function handlePostMessage(event) {
     const action = event.data.action;
     const mainIframe = document.getElementById('myCompFrame');
 
-    console.log('📨 Message received:', action, event.data);
-
-    // ✅ IGNORE messages tanpa action (seperti wappalyzer, dll)
-    if (!action) {
-        // Hanya handle resize jika ada height
-        if (event.data.height && !isModalOpen) {
-            if (mainIframe) {
-                mainIframe.style.height = event.data.height + 'px';
-                console.log('📏 Iframe resized to:', event.data.height);
-            }
-        }
-        return; // Skip processing
-    }
-
     // 📏 Resize main iframe (only if modal not open)
     if (action === 'resizeIframe' && event.data.height && !isModalOpen) {
         if (mainIframe) {
             mainIframe.style.height = event.data.height + 'px';
-            console.log('📏 Iframe resized to:', event.data.height);
         }
     }
 
     // 🎨 Open modal (triggered by "Beli" button click)
     if (action === 'expandToBody' || action === 'openCheckout' || action === 'openModal') {
-        console.log('🎨 Opening checkout modal');
         openModal(event.data);
     }
 
@@ -184,7 +155,6 @@ let eventListenersInitialized = false;
 // ✅ INITIALIZE EVENT LISTENERS - ONLY ONCE
 function initializeEventListeners() {
     if (eventListenersInitialized) {
-        console.warn('⚠️ Event listeners already initialized, skipping...');
         return;
     }
 
@@ -211,8 +181,6 @@ function initializeEventListeners() {
     });
 
     eventListenersInitialized = true;
-    console.log('✅ Event listeners initialized');
-    console.log('🌐 Base URL detected:', getBaseURL());
 }
 
 // ✅ INITIALIZE ON DOM READY
