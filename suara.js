@@ -121,11 +121,11 @@ function handlePostMessage(event) {
     const mainIframe = document.getElementById('myCompFrame');
 
     // 📏 Resize main iframe (only if modal not open)
-    if (action === 'resizeIframe' && event.data.height && !isModalOpen) {
-        if (mainIframe) {
-            mainIframe.style.height = event.data.height + 'px';
-        }
-    }
+    // if (action === 'resizeIframe' && event.data.height && !isModalOpen) {
+    //     if (mainIframe) {
+    //         mainIframe.style.height = event.data.height + 'px';
+    //     }
+    // }
 
     // 🎨 Open modal (triggered by "Beli" button click)
     if (action === 'expandToBody' || action === 'openCheckout' || action === 'openModal') {
@@ -182,6 +182,46 @@ function initializeEventListeners() {
 
     eventListenersInitialized = true;
 }
+
+function setupIframeAutoResize() {
+    const mainIframe = document.getElementById('myCompFrame');
+    if (!mainIframe) return;
+
+    // Method 1: Listen to postMessage dari iframe content
+    // window.addEventListener('message', function(event) {
+    //     if (event.data.action === 'resizeIframe' && event.data.height) {
+    //         mainIframe.style.height = event.data.height + 'px';
+    //     }
+    // });
+
+    // Method 2: Auto-detect iframe content height
+    // mainIframe.addEventListener('load', function() {
+    //     try {
+    //         // Try to access iframe content (hanya works jika same-origin)
+    //         const iframeBody = mainIframe.contentDocument?.body;
+    //         const iframeHtml = mainIframe.contentDocument?.documentElement;
+            
+    //         if (iframeBody && iframeHtml) {
+    //             const height = Math.max(
+    //                 iframeBody.scrollHeight,
+    //                 iframeBody.offsetHeight,
+    //                 iframeHtml.clientHeight,
+    //                 iframeHtml.scrollHeight,
+    //                 iframeHtml.offsetHeight
+    //             );
+                
+    //             if (height > 0) {
+    //                 mainIframe.style.height = height + 'px';
+    //             }
+    //         }
+    //     } catch (e) {
+    //         // Cross-origin, gunakan postMessage method
+    //         console.log('Cannot access iframe content (cross-origin), using postMessage method');
+    //     }
+    // });
+}
+
+document.addEventListener('DOMContentLoaded', setupIframeAutoResize);
 
 // ✅ INITIALIZE ON DOM READY
 if (document.readyState === 'loading') {
