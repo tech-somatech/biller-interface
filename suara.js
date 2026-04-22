@@ -112,40 +112,37 @@ function updateMainIframeData(data) {
 
 // ✅ HANDLER FUNCTION - Define once, reuse
 function handlePostMessage(event) {
-    // ✅ DEFENSIVE: Pastikan event.data ada
     if (!event.data || typeof event.data !== 'object') {
-        return; // Ignore non-object messages
+        return;
     }
 
     const action = event.data.action;
     const mainIframe = document.getElementById('myCompFrame');
 
-    // 📏 Resize main iframe (only if modal not open)
-    // if (action === 'resizeIframe' && event.data.height && !isModalOpen) {
-    //     if (mainIframe) {
-    //         mainIframe.style.height = event.data.height + 'px';
-    //     }
-    // }
-
-    // 🎨 Open modal (triggered by "Beli" button click)
     if (action === 'expandToBody' || action === 'openCheckout' || action === 'openModal') {
         openModal(event.data);
     }
 
-    // 🔁 Redirect home
     if (action === 'redirectToHome') {
         window.location.href = window.location.origin;
     }
 
-    // 💾 Update data dari modal ke main iframe
     if (action === 'updateParentForm') {
         updateMainIframeData(event.data.data);
         closeModal();
     }
 
-    // ❌ Close modal
     if (action === 'closeModal') {
         closeModal();
+    }
+
+    // ✅ Tambahan: scroll lock saat iframe punya modal aktif
+    if (action === 'iframeModalOpen') {
+        document.body.style.overflow = 'hidden';
+    }
+
+    if (action === 'iframeModalClose') {
+        document.body.style.overflow = '';
     }
 }
 
